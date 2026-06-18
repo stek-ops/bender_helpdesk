@@ -70,6 +70,9 @@ export default function KeywordRules() {
     load()
   }
 
+  const filteredCatsForNew = newGroupId
+    ? cats.filter(c => c.group_id === Number(newGroupId))
+    : cats
   const filteredCats = editGroupId
     ? cats.filter(c => c.group_id === Number(editGroupId))
     : cats
@@ -94,9 +97,16 @@ export default function KeywordRules() {
             </div>
             <div className="w-44">
               <label className="block text-xs font-medium text-[var(--b24-text-sidebar)] mb-1">{t("rules_group")}</label>
-              <Select value={newGroupId} onChange={e => setNewGroupId(e.target.value)}>
+              <Select value={newGroupId} onChange={e => { setNewGroupId(e.target.value); setNewCatId("") }}>
                 <option value="">{t("rules_any_group")}</option>
                 {groups.map((g: any) => <option key={g.id} value={g.id}>{g.name}</option>)}
+              </Select>
+            </div>
+            <div className="w-44">
+              <label className="block text-xs font-medium text-[var(--b24-text-sidebar)] mb-1">{t("rules_header_category")}</label>
+              <Select value={newCatId} onChange={e => setNewCatId(e.target.value)}>
+                <option value="">{t("rules_any_category")}</option>
+                {filteredCatsForNew.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
             </div>
             <div className="w-44">

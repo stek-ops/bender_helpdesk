@@ -26,10 +26,10 @@ export default function Layout({ user, onLogout }: LayoutProps) {
 
   const navItems: NavItem[] = [
     { to: "/", label: t("nav_dashboard"), icon: LayoutDashboard, admin: false },
-    { to: "/tickets", label: t("nav_tickets"), icon: TicketCheck, admin: false },
+    { to: "/tickets", label: user.role === "admin" ? t("nav_my_tickets") : t("nav_tickets"), icon: TicketCheck, admin: false },
     { to: "/tickets/create", label: t("tickets_create"), icon: TicketPlus, admin: false },
     { to: "/admin", label: t("nav_admin"), icon: Settings, admin: true },
-    { to: "/admin/tickets", label: t("nav_tickets"), icon: TicketCheck, admin: true },
+    { to: "/admin/tickets", label: t("nav_all_tickets"), icon: TicketCheck, admin: true },
     { to: "/admin/categories", label: t("tickets_category"), icon: Tags, admin: true },
     { to: "/admin/users", label: t("nav_users"), icon: Users, admin: true },
     { to: "/admin/ldap", label: t("nav_ldap"), icon: Server, admin: true },

@@ -11,11 +11,13 @@ use App\Notifications\TicketCreated;
 use App\Notifications\TicketAssigned;
 use App\Notifications\TicketStatusChanged;
 use App\Services\TeamsService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
+    use AuthorizesRequests;
     public function index(Request $request)
     {
         $user = $request->user();

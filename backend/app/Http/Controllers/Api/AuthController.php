@@ -65,6 +65,7 @@ class AuthController extends Controller
             "name" => "sometimes|string|max:255",
             "email" => "sometimes|email|max:255|unique:users,email,$user->id",
             "password" => "sometimes|string|min:6",
+            "notify_email" => "sometimes|boolean",
         ]);
 
         if (isset($data["password"])) {

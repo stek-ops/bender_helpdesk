@@ -9,14 +9,19 @@ class NewComment extends Notification
 {
     use Queueable;
     public function __construct(public Ticket $ticket, public Comment $comment) {}
-    public function via(object $notifiable): array { return ['mail', 'database']; }
+    public function via(object $notifiable): array
+    {
+        $channels = ['database'];
+        if (!$notifiable instanceof \App\Models\User || $notifiable->notify_email) {
+            $channels[] = 'mail';
+        }
+        return $channels;
+    }
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New Comment: ' . $this->ticket->title)
-            ->line($this->comment->user->name . ' commented on ticket #' . $this->ticket->id)
-            ->line($this->comment->content)
-            ->action('View Ticket', url('/tickets/' . $this->ticket->id));
+            ->subject('Новий коментар #' . $this->ticket->id)
+            ->view('emails.new-comment', ['ticket' => $this->ticket, 'comment' => $this->comment]);
     }
 
 

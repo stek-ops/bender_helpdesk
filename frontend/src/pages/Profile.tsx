@@ -18,6 +18,7 @@ export default function Profile() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [notifyEmail, setNotifyEmail] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -26,6 +27,7 @@ export default function Profile() {
       setProfile(res.data)
       setName(res.data.user.name)
       setEmail(res.data.user.email)
+      setNotifyEmail(res.data.user.notify_email !== false)
     })
   }, [])
 
@@ -33,7 +35,7 @@ export default function Profile() {
     e.preventDefault()
     setSaving(true)
     try {
-      const data: any = { name, email }
+      const data: any = { name, email, notify_email: notifyEmail }
       if (password) data.password = password
       await api.put("/profile", data)
       setSaved(true)
@@ -95,6 +97,13 @@ export default function Profile() {
               <div>
                 <label className="block text-sm font-medium text-[var(--b24-text)] mb-1">{t("profile_new_password")}</label>
                 <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={t("profile_password_placeholder")} />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-[var(--b24-text)]">{t("profile_notify_email")}</label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={notifyEmail} onChange={e => setNotifyEmail(e.target.checked)} className="sr-only peer" />
+                  <div className="w-10 h-5.5 bg-[var(--b24-border-light)] rounded-full peer peer-checked:bg-[var(--b24-primary)] peer-checked:after:translate-x-[18px] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-[18px] after:w-[18px] after:transition-all"></div>
+                </label>
               </div>
               <Button type="submit" disabled={saving}>
                 <Save className="w-4 h-4 mr-1.5" />{saving ? t("detail_loading") : t("profile_save")}

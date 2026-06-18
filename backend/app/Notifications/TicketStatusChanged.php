@@ -8,14 +8,19 @@ class TicketStatusChanged extends Notification
 {
     use Queueable;
     public function __construct(public Ticket $ticket) {}
-    public function via(object $notifiable): array { return ['mail', 'database']; }
+    public function via(object $notifiable): array
+    {
+        $channels = ['database'];
+        if (!$notifiable instanceof \App\Models\User || $notifiable->notify_email) {
+            $channels[] = 'mail';
+        }
+        return $channels;
+    }
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Ticket Status Updated: ' . $this->ticket->title)
-            ->line('Your ticket status changed to: ' . $this->ticket->status)
-            ->line($this->ticket->title)
-            ->action('View Ticket', url('/tickets/' . $this->ticket->id));
+            ->subject('Статус заявки змінено #' . $this->ticket->id)
+            ->view('emails.ticket-status-changed', ['ticket' => $this->ticket]);
     }
 
 

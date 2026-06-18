@@ -771,6 +771,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     profile_save: "Save",
     profile_saved: "Profile saved",
     profile_recent_tickets: "Recent Tickets",
+    profile_notify_email: "Email notifications",
     // ===== Email Settings =====
     email_title: "Email Settings",
     email_subtitle: "SMTP / mail notifications",
@@ -1114,6 +1115,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     profile_save: "Zapisz",
     profile_saved: "Profil zapisany",
     profile_recent_tickets: "Ostatnie zgloszenia",
+    profile_notify_email: "Powiadomienia email",
     // ===== Email Settings =====
     email_title: "Ustawienia Email",
     email_subtitle: "SMTP / powiadomienia mailowe",

@@ -19,7 +19,7 @@ Full-stack helpdesk system with AI assistant, AD/LDAP, Microsoft 365 OAuth, Team
 - Comments with image paste support
 - SLA auto-calculation (priority-based deadlines)
 - i18n: Ukrainian, English, Polish
-- Dark/light theme (Bitrix24 blue)
+- Dark/light theme
 - Admin panel: users, categories, keyword rules, settings
 - Queue worker for email/push notifications
 

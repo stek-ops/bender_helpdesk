@@ -30,7 +30,7 @@ class MicrosoftOauthController extends Controller
             'state' => $state = \Illuminate\Support\Str::random(40),
         ]);
 
-        session(['oauth_state' => $state]);
+        \Illuminate\Support\Facades\Cache::put('oauth_state_' . $state, true, now()->addMinutes(5));
         return redirect($url);
     }
 
@@ -41,11 +41,10 @@ class MicrosoftOauthController extends Controller
             return redirect('/login?error=no_code');
         }
 
-        $savedState = session('oauth_state');
-        if (!$request->query('state') || !$savedState || !hash_equals($savedState, $request->query('state'))) {
+        $state = $request->query('state');
+        if (!$state || !\Illuminate\Support\Facades\Cache::pull('oauth_state_' . $state)) {
             return redirect('/login?error=invalid_state');
         }
-        session()->forget('oauth_state');
 
         $tenantId = \App\Models\Setting::getValue('microsoft_tenant_id');
         $clientId = \App\Models\Setting::getValue('microsoft_client_id');

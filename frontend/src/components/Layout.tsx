@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { NavLink, Outlet } from "react-router-dom"
 import BenderAssistant from "./BenderAssistant"
 import { clsx } from "clsx"
@@ -6,7 +5,8 @@ import NotificationToast from "./NotificationToast"
 import ThemeToggle from "./ThemeToggle"
 import { useTranslation } from "../hooks/useTranslation"
 import LanguageSwitcher from "./LanguageSwitcher"
-import { LayoutDashboard, TicketCheck, TicketPlus, Settings, Users, Tags, LogOut, ChevronDown, FileText, MessageSquare, Server, BookOpen, UserCircle } from "lucide-react"
+import { useState } from "react"
+import { LayoutDashboard, TicketCheck, TicketPlus, Settings, Users, Tags, LogOut, ChevronDown, ChevronRight, FileText, MessageSquare, Server, BookOpen, UserCircle, Mail } from "lucide-react"
 
 const MicrosoftIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 21 21" fill="none">
@@ -24,19 +24,23 @@ interface NavItem { to: string; label: string; icon: React.ComponentType<{ class
 
 export default function Layout({ user, onLogout }: LayoutProps) {
   const { t, lang, setLang } = useTranslation()
+  const [adminExpanded, setAdminExpanded] = useState(true)
 
   const navItems: NavItem[] = [
     { to: "/", label: t("nav_dashboard"), icon: LayoutDashboard, admin: false },
     { to: "/tickets", label: user.role === "admin" ? t("nav_my_tickets") : t("nav_tickets"), icon: TicketCheck, admin: false },
     { to: "/tickets/create", label: t("tickets_create"), icon: TicketPlus, admin: false },
-    { to: "/admin", label: t("nav_admin"), icon: Settings, admin: true },
-    { to: "/admin/tickets", label: t("nav_all_tickets"), icon: TicketCheck, admin: true },
-    { to: "/admin/categories", label: t("tickets_category"), icon: Tags, admin: true },
-    { to: "/admin/users", label: t("nav_users"), icon: Users, admin: true },
-    { to: "/admin/ldap", label: t("nav_ldap"), icon: Server, admin: true },
-    { to: "/admin/teams", label: t("nav_teams"), icon: MessageSquare, admin: true },
-    { to: "/admin/microsoft", label: t("nav_microsoft"), icon: MicrosoftIcon, admin: true },
-    { to: "/admin/keyword-rules", label: t("nav_keyword_rules"), icon: FileText, admin: true },
+    { to: "/admin", label: t("nav_admin"), icon: Settings, admin: true, children: [
+      { to: "/admin", label: t("nav_dashboard"), icon: LayoutDashboard, admin: true },
+      { to: "/admin/tickets", label: t("nav_all_tickets"), icon: TicketCheck, admin: true },
+      { to: "/admin/categories", label: t("tickets_category"), icon: Tags, admin: true },
+      { to: "/admin/users", label: t("nav_users"), icon: Users, admin: true },
+      { to: "/admin/ldap", label: t("nav_ldap"), icon: Server, admin: true },
+      { to: "/admin/teams", label: t("nav_teams"), icon: MessageSquare, admin: true },
+      { to: "/admin/microsoft", label: t("nav_microsoft"), icon: MicrosoftIcon, admin: true },
+      { to: "/admin/keyword-rules", label: t("nav_keyword_rules"), icon: FileText, admin: true },
+      { to: "/admin/email", label: t("nav_email_settings"), icon: Mail, admin: true },
+    ] },
     { to: "/knowledge", label: t("nav_kb"), icon: BookOpen, admin: false },
     { to: "/profile", label: t("nav_profile"), icon: UserCircle, admin: false },
   ]
@@ -71,22 +75,58 @@ export default function Layout({ user, onLogout }: LayoutProps) {
         {/* Sidebar */}
         <aside className="w-[240px] min-w-[240px] bg-[var(--b24-card)] border-r border-[var(--b24-border)] flex flex-col overflow-y-auto">
           <nav className="flex-1 py-3">
-            {filtered.map(item => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) => clsx(
-                  "flex items-center gap-3 px-5 py-2.5 text-sm transition-colors border-l-[3px]",
-                  isActive
-                    ? "border-[var(--b24-primary)] bg-[var(--b24-active-bg)] text-[var(--b24-primary)] font-medium"
-                    : "border-transparent text-[var(--b24-text-sidebar)] hover:bg-[var(--b24-bg-light)] hover:text-[var(--b24-text)]"
-                )}
-              >
-                <item.icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
+            {filtered.map(item => {
+              if (item.children && item.children.length > 0) {
+                return (
+                  <div key={item.to}>
+                    <button
+                      onClick={() => setAdminExpanded(!adminExpanded)}
+                      className="flex items-center gap-3 w-full px-5 py-2.5 text-sm transition-colors border-l-[3px] border-transparent text-[var(--b24-text-sidebar)] hover:bg-[var(--b24-bg-light)] hover:text-[var(--b24-text)] cursor-pointer"
+                    >
+                      <item.icon className="w-4 h-4 shrink-0" />
+                      <span className="flex-1 text-left">{item.label}</span>
+                      <ChevronRight className={clsx("w-4 h-4 transition-transform", adminExpanded && "rotate-90")} />
+                    </button>
+                    {adminExpanded && (
+                      <div className="ml-4">
+                        {item.children.map(child => (
+                          <NavLink
+                            key={child.to}
+                            to={child.to}
+                            end={child.to === "/admin"}
+                            className={({ isActive }) => clsx(
+                              "flex items-center gap-3 px-5 py-2 text-sm transition-colors border-l-[3px] rounded-r-lg",
+                              isActive
+                                ? "border-[var(--b24-primary)] bg-[var(--b24-active-bg)] text-[var(--b24-primary)] font-medium"
+                                : "border-transparent text-[var(--b24-text-sidebar)] hover:bg-[var(--b24-bg-light)] hover:text-[var(--b24-text)]"
+                            )}
+                          >
+                            <child.icon className="w-4 h-4 shrink-0" />
+                            <span>{child.label}</span>
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === "/"}
+                  className={({ isActive }) => clsx(
+                    "flex items-center gap-3 px-5 py-2.5 text-sm transition-colors border-l-[3px]",
+                    isActive
+                      ? "border-[var(--b24-primary)] bg-[var(--b24-active-bg)] text-[var(--b24-primary)] font-medium"
+                      : "border-transparent text-[var(--b24-text-sidebar)] hover:bg-[var(--b24-bg-light)] hover:text-[var(--b24-text)]"
+                  )}
+                >
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </NavLink>
+              )
+            })}
           </nav>
         </aside>
 

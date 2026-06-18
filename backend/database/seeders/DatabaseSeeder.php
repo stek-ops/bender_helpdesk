@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         ]);
         // Executors
         $executors = [];
-        foreach (['Іван Системов', 'Петро Багов', 'Олексій Мережев', 'Марія Кодова'] as $i => $name) {
+        foreach (['Alice Admin', 'Bob Builder', 'Charlie Code', 'Diana Debug'] as $i => $name) {
             $executors[] = User::create([
                 'name' => $name,
                 'email' => 'executor' . ($i+1) . '@helpdesk.local',
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
         // Users
-        foreach (['Андрій Користувач', 'Олена Працівник'] as $name) {
+        foreach (['Eve User', 'Frank User'] as $name) {
             User::create([
                 'name' => $name,
                 'email' => strtolower(str_replace(' ', '.', $name)) . '@helpdesk.local',

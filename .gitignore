@@ -10,3 +10,4 @@ Thumbs.db
 /backend/storage/logs/
 /backend/bootstrap/cache/
 /frontend/dist/
+.env.bak

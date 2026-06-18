@@ -105,10 +105,10 @@ class TicketController extends Controller
 
         $ticket->load(['category.group', 'user', 'executor', 'coExecutor', 'observer', 'reviewer', 'files']);
         try { $ticket->user->notify(new TicketCreated($ticket)); } catch (\Exception $e) {}
-            try { TeamsService::send("Нова заявка #{$ticket->id}", "{$ticket->title}\n{$ticket->description}", "1F6EB0", "https://mehal.pp.ua/tickets/{$ticket->id}"); } catch (\Exception $e) {}
+            try { TeamsService::send("Нова заявка #{$ticket->id}", "{$ticket->title}\n{$ticket->description}", "1F6EB0", env("APP_FRONTEND_URL", config("app.url")) . "/tickets/" . $ticket->id); } catch (\Exception $e) {}
         if ($ticket->executor) {
             try { $ticket->executor->notify(new TicketAssigned($ticket)); } catch (\Exception $e) {}
-            try { TeamsService::send("Заявка #{$ticket->id} призначена", "Виконавець: {$ticket->executor->name}\n{$ticket->title}", "D4A017", "https://mehal.pp.ua/tickets/{$ticket->id}"); } catch (\Exception $e) {}
+            try { TeamsService::send("Заявка #{$ticket->id} призначена", "Виконавець: {$ticket->executor->name}\n{$ticket->title}", "D4A017", env("APP_FRONTEND_URL", config("app.url")) . "/tickets/" . $ticket->id); } catch (\Exception $e) {}
         }
         return response()->json($ticket, 201);
     }
@@ -176,11 +176,11 @@ class TicketController extends Controller
         }
         if (in_array('status', $changes) && $ticket->user_id !== $user->id) {
             try { $ticket->user->notify(new TicketStatusChanged($ticket)); } catch (\Exception $e) {}
-            try { TeamsService::send("Статус заявки #{$ticket->id} змінено", "Статус: {$ticket->status}\n{$ticket->title}", "3A8C2C", "https://mehal.pp.ua/tickets/{$ticket->id}"); } catch (\Exception $e) {}
+            try { TeamsService::send("Статус заявки #{$ticket->id} змінено", "Статус: {$ticket->status}\n{$ticket->title}", "3A8C2C", env("APP_FRONTEND_URL", config("app.url")) . "/tickets/" . $ticket->id); } catch (\Exception $e) {}
         }
         if (in_array('executor', $changes) && $ticket->executor) {
             try { $ticket->executor->notify(new TicketAssigned($ticket)); } catch (\Exception $e) {}
-            try { TeamsService::send("Заявка #{$ticket->id} призначена", "Виконавець: {$ticket->executor->name}\n{$ticket->title}", "D4A017", "https://mehal.pp.ua/tickets/{$ticket->id}"); } catch (\Exception $e) {}
+            try { TeamsService::send("Заявка #{$ticket->id} призначена", "Виконавець: {$ticket->executor->name}\n{$ticket->title}", "D4A017", env("APP_FRONTEND_URL", config("app.url")) . "/tickets/" . $ticket->id); } catch (\Exception $e) {}
         }
         return response()->json($ticket);
     }

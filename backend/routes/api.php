@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\SettingsController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/auth/oauth/callback', [AuthController::class, 'oauthCallback']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload', [App\Http\Controllers\Api\UploadController::class, 'store']);

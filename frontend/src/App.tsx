@@ -36,17 +36,30 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const token = params.get("token")
-    if (token && window.location.pathname === "/login/microsoft") {
-      const user = {
-        id: Number(params.get("id")),
-        name: params.get("name") || "",
-        email: params.get("email") || "",
-        role: params.get("role") || "user",
-        token,
+    const code = params.get("code")
+    if (window.location.pathname === "/login/microsoft") {
+      if (code) {
+        axios.get("/api/auth/oauth/callback?code=" + code).then(res => {
+          const data = res.data
+          const user = { id: data.id, name: data.name, email: data.email, role: data.role, token: data.token }
+          localStorage.setItem("user", JSON.stringify(user))
+          handleLogin(user)
+          window.location.href = "/"
+        }).catch(() => {
+          window.location.href = "/login"
+        })
+      } else if (token) {
+        const user = {
+          id: Number(params.get("id")),
+          name: params.get("name") || "",
+          email: params.get("email") || "",
+          role: params.get("role") || "user",
+          token,
+        }
+        localStorage.setItem("user", JSON.stringify(user))
+        handleLogin(user)
+        window.location.href = "/"
       }
-      localStorage.setItem("user", JSON.stringify(user))
-      handleLogin(user)
-      window.location.href = "/"
     }
   }, [])
 

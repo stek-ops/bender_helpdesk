@@ -75,4 +75,25 @@ class AuthController extends Controller
         return response()->json($user);
     }
 
+    public function oauthCallback(Request $request)
+    {
+        $code = $request->query('code');
+        if (!$code) {
+            return response()->json(['message' => 'Missing code parameter'], 400);
+        }
+
+        $data = \Illuminate\Support\Facades\Cache::pull('oauth_' . $code);
+
+        if (!$data) {
+            return response()->json(['message' => 'Invalid or expired code'], 404);
+        }
+
+        return response()->json([
+            'token' => $data['token'],
+            'id' => $data['id'],
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'role' => $data['role'],
+        ]);
+    }
 }

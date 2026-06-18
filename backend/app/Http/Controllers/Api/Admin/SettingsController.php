@@ -134,7 +134,7 @@ class SettingsController extends Controller
             "encryption" => env("MAIL_ENCRYPTION", "tls"),
             "username" => env("MAIL_USERNAME", ""),
             "password" => "",
-            "from_address" => env("MAIL_FROM_ADDRESS", "helpdesk@mehal.pp.ua"),
+            "from_address" => env("MAIL_FROM_ADDRESS", "helpdesk@example.com"),
             "from_name" => env("MAIL_FROM_NAME", "IT Helpdesk"),
         ]);
     }
@@ -161,7 +161,7 @@ class SettingsController extends Controller
             "MAIL_PORT" => (string) ($data["port"] ?? "587"),
             "MAIL_ENCRYPTION" => $data["encryption"] ?? "tls",
             "MAIL_USERNAME" => $data["username"] ?? "",
-            "MAIL_FROM_ADDRESS" => $data["from_address"] ?? "helpdesk@mehal.pp.ua",
+            "MAIL_FROM_ADDRESS" => $data["from_address"] ?? "helpdesk@example.com",
             "MAIL_FROM_NAME" => $data["from_name"] ?? "IT Helpdesk",
         ];
 

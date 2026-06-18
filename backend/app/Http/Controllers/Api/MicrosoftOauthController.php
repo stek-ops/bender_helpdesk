@@ -104,7 +104,15 @@ class MicrosoftOauthController extends Controller
 
         $token = $user->createToken('microsoft-oauth')->plainTextToken;
 
+        $code = \Illuminate\Support\Str::random(32);
+        \Illuminate\Support\Facades\Cache::put('oauth_' . $code, [
+            'token' => $token,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'id' => $user->id,
+        ], now()->addMinutes(5));
         $frontendUrl = env('APP_FRONTEND_URL', config('app.url'));
-        return redirect("{$frontendUrl}/login/microsoft?token={$token}&name=" . urlencode($user->name) . "&email=" . urlencode($user->email) . "&role={$user->role}&id={$user->id}");
+        return redirect("{$frontendUrl}/login/microsoft?code={$code}");
     }
 }

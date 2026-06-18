@@ -66,6 +66,11 @@ sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring 
 
 ok "System packages installed"
 
+# ===== START POSTGRESQL =====
+sudo systemctl enable --now postgresql || true
+sleep 2
+ok "PostgreSQL started"
+
 # ===== NODE.JS =====
 if ! command -v node &>/dev/null || [ "$(node -v | cut -d. -f1 | tr -d v)" -lt "$NODE_MAJOR" ]; then
   info "Installing Node.js $NODE_MAJOR..."
@@ -100,6 +105,12 @@ ok "Repository cloned"
 
 # ===== DATABASE =====
 info "Configuring PostgreSQL..."
+# Ensure PostgreSQL accepts TCP connections
+PG_VERSION=$(ls /etc/postgresql/ | head -1)
+PG_CONF="/etc/postgresql/$PG_VERSION/main/postgresql.conf"
+sudo sed -i "s/#listen_addresses/listen_addresses/" "$PG_CONF" 2>/dev/null || true
+sudo systemctl restart postgresql
+sleep 2
 sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;" 2>/dev/null || warn "Database $DB_NAME already exists"
 sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" 2>/dev/null || warn "User $DB_USER already exists"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" 2>/dev/null || true

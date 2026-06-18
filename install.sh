@@ -23,7 +23,7 @@ PHP_VERSION="8.3"
 NODE_MAJOR="22"
 
 # ===== PROMPTS =====
-read -rp "Domain (e.g. mehal.pp.ua): " APP_DOMAIN
+read -rp "Domain (e.g. example.com): " APP_DOMAIN
 [ -z "$APP_DOMAIN" ] && err "Domain is required"
 read -rp "App name [IT Helpdesk]: " APP_NAME
 APP_NAME="${APP_NAME:-IT Helpdesk}"
@@ -134,6 +134,8 @@ ok "Environment configured"
 
 # ===== PHP DEPENDENCIES =====
 info "Installing PHP dependencies..."
+mkdir -p "$INSTALL_DIR/backend/bootstrap/cache"
+sudo chmod -R 775 "$INSTALL_DIR/backend/bootstrap/cache"
 cd "$INSTALL_DIR/backend" && composer install --no-dev --optimize-autoloader
 ok "Composer install done"
 

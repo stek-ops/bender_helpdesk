@@ -124,14 +124,19 @@ if [ -f backend/.env ]; then
   warn "backend/.env already exists — skipping"
 else
   info "Creating backend/.env..."
+  if [ "$SSL_ENABLED" = "y" ] || [ "$SSL_ENABLED" = "Y" ]; then
+    APP_PROTO="https"
+  else
+    APP_PROTO="http"
+  fi
   cat > backend/.env <<ENVFILE
 APP_NAME="$APP_NAME"
 APP_ENV=production
 APP_KEY=
 APP_DEBUG=false
 APP_TIMEZONE=UTC
-APP_URL=https://$APP_DOMAIN
-APP_FRONTEND_URL=https://$APP_DOMAIN
+APP_URL=${APP_PROTO}://$APP_DOMAIN
+APP_FRONTEND_URL=${APP_PROTO}://$APP_DOMAIN
 
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
@@ -174,6 +179,9 @@ fi
 ok "APP_KEY generated"
 
 # ===== MIGRATIONS =====
+info "Creating queue + session tables..."
+php artisan queue:table 2>/dev/null || true
+php artisan session:table 2>/dev/null || true
 info "Running migrations..."
 cd "$INSTALL_DIR/backend"
 php artisan migrate --force
@@ -186,6 +194,7 @@ php artisan tinker --execute="\\App\\Models\\User::create(['name' => 'Admin', 'e
 ok "Admin user created: $ADMIN_EMAIL"
 
 # ===== STORAGE LINK =====
+mkdir -p storage/app/public
 php artisan storage:link 2>/dev/null || true
 
 # ===== CACHE =====
@@ -194,7 +203,7 @@ php artisan config:cache 2>/dev/null || php artisan config:clear
 
 # ===== FRONTEND =====
 info "Installing frontend dependencies..."
-cd "$INSTALL_DIR/frontend" && npm install
+cd "$INSTALL_DIR/frontend" && npm install --no-audit --no-fund
 ok "npm install done"
 
 info "Building frontend..."
@@ -250,6 +259,7 @@ NGINX
 sudo ln -sf /etc/nginx/sites-available/helpdesk /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
+sudo systemctl restart php$PHP_VERSION-fpm
 ok "Nginx configured (HTTP only)"
 
 # ===== SSL (Let's Encrypt) =====

@@ -39,6 +39,15 @@ DB_USER="${DB_USER_IN:-$DB_USER}"
 read -rsp "PostgreSQL password [$DB_PASS]: " DB_PASS_IN
 echo
 DB_PASS="${DB_PASS_IN:-$DB_PASS}"
+echo ""
+read -rp "Admin email [admin@$APP_DOMAIN]: " ADMIN_EMAIL
+ADMIN_EMAIL="${ADMIN_EMAIL:-admin@$APP_DOMAIN}"
+read -rsp "Admin password (min 6 chars): " ADMIN_PASS
+echo
+while [ -z "$ADMIN_PASS" ] || [ ${#ADMIN_PASS} -lt 6 ]; do
+  read -rsp "Admin password (min 6 chars): " ADMIN_PASS
+  echo
+done
 read -rp "Email from address [helpdesk@$APP_DOMAIN]: " MAIL_FROM
 MAIL_FROM="${MAIL_FROM:-helpdesk@$APP_DOMAIN}"
 
@@ -158,6 +167,15 @@ info "Running migrations..."
 cd "$INSTALL_DIR/backend"
 php artisan migrate --force
 ok "Migrations done"
+
+# ===== DEFAULT ADMIN =====
+info "Creating admin user..."
+HASHED=$(php -r "echo password_hash('$ADMIN_PASS', PASSWORD_BCRYPT);")
+sudo -u postgres psql -d "$DB_NAME" -c "INSERT INTO users (name, email, password, role, is_active, created_at, updated_at) VALUES ('Admin', '$ADMIN_EMAIL', '$HASHED', 'admin', true, NOW(), NOW()) ON CONFLICT (email) DO UPDATE SET password='$HASHED', role='admin';" 2>/dev/null || {
+  cd "$INSTALL_DIR/backend"
+  php artisan tinker --execute="\\App\\Models\\User::create(['name' => 'Admin', 'email' => '$ADMIN_EMAIL', 'password' => bcrypt('$ADMIN_PASS'), 'role' => 'admin', 'is_active' => true]);" 2>/dev/null || true
+}
+ok "Admin user created: $ADMIN_EMAIL"
 
 # ===== STORAGE LINK =====
 php artisan storage:link 2>/dev/null || true

@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+:root {
+  --b24-primary: #1F6EB0;
+  --b24-primary-hover: #1A5C94;
+  --b24-header: #1A5276;
+  --b24-sidebar: #FFFFFF;
+  --b24-content: #F0F2F5;
+  --b24-card: #FFFFFF;
+  --b24-text: #1A1A1A;
+  --b24-text-secondary: #5A6874;
+  --b24-text-tertiary: #959CA4;
+  --b24-text-sidebar: #3D4F5E;
+  --b24-text-inverse: #FFFFFF;
+  --b24-border: #D4D8DC;
+  --b24-border-light: #BCC2C8;
+  --b24-hover: #F5F6F7;
+  --b24-sidebar-active: #1F6EB0;
+  --b24-bg-light: #F0F4F8;
+  --b24-success: #3A8C2C;
+  --b24-success-bg: #E8F5E8;
+  --b24-success-text: #2A6B1E;
+  --b24-warning: #D4A017;
+  --b24-warning-bg: #FFF8E1;
+  --b24-warning-text: #8B6914;
+  --b24-danger: #CC3333;
+  --b24-danger-bg: #FDE8E8;
+  --b24-danger-text: #8B1A1A;
+  --b24-info: #2D7D8B;
+  --b24-active-bg: #EBF3FA;
+  --b24-status-new-bg: #FFF8E1;
+  --b24-status-new-text: #8B6914;
+  --b24-status-new-border: #F0DBB0;
+  --b24-status-progress-bg: #E3ECF5;
+  --b24-status-progress-text: #1B5E8A;
+  --b24-status-progress-border: #B0C8DD;
+  --b24-status-resolved-bg: #E8F5E8;
+  --b24-status-resolved-text: #2A6B1E;
+  --b24-status-resolved-border: #A0C8A0;
+  --b24-status-cancelled-bg: #FDE8E8;
+  --b24-status-cancelled-text: #8B1A1A;
+  --b24-status-cancelled-border: #F0B0B0;
+  --b24-info-bg: #E3ECF5;
+  --b24-info-text: #1B5E8A;
+}
+
+.dark {
+  --b24-primary: #3D9FD8;
+  --b24-primary-hover: #5DB3E0;
+  --b24-header: #0D2B3E;
+  --b24-sidebar: #1A1E22;
+  --b24-content: #14171A;
+  --b24-card: #1E2226;
+  --b24-text: #E8EAEC;
+  --b24-text-secondary: #8A96A0;
+  --b24-text-tertiary: #5A6A74;
+  --b24-text-sidebar: #8A96A0;
+  --b24-text-inverse: #FFFFFF;
+  --b24-border: #2A3035;
+  --b24-border-light: #3A4045;
+  --b24-hover: #22282C;
+  --b24-sidebar-active: #3D9FD8;
+  --b24-bg-light: #1A2228;
+  --b24-success: #4DCF3A;
+  --b24-success-bg: #1A2E1A;
+  --b24-success-text: #6DE85A;
+  --b24-warning: #E8B830;
+  --b24-warning-bg: #2E2818;
+  --b24-warning-text: #F0CC50;
+  --b24-danger: #E84545;
+  --b24-danger-bg: #2E1A1A;
+  --b24-danger-text: #F06060;
+  --b24-info: #4DA0B0;
+  --b24-active-bg: #1A2833;
+  --b24-status-new-bg: #2E2818;
+  --b24-status-new-text: #F0CC50;
+  --b24-status-new-border: #4A4020;
+  --b24-status-progress-bg: #1A2833;
+  --b24-status-progress-text: #5DB3E0;
+  --b24-status-progress-border: #2A4050;
+  --b24-status-resolved-bg: #1A2E1A;
+  --b24-status-resolved-text: #6DE85A;
+  --b24-status-resolved-border: #2A4A2A;
+  --b24-status-cancelled-bg: #2E1A1A;
+  --b24-status-cancelled-text: #F06060;
+  --b24-status-cancelled-border: #4A2A2A;
+  --b24-info-bg: #1A2833;
+  --b24-info-text: #5DB3E0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--b24-content);
+  color: var(--b24-text);
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+::selection { background-color: rgba(44, 111, 213, 0.15); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C0C4C8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #A0A4A8; }
+
+body.dark ::-webkit-scrollbar-thumb { background: #555; }
+body.dark ::-webkit-scrollbar-thumb:hover { background: #777; }
+
+@media print {
+  header, aside, .print\:hidden { display: none !important; }
+  body { background: white !important; }
+  main { padding: 0 !important; overflow: visible !important; }
+  .flex { display: block !important; }
+  .w-\[280px\] { width: 100% !important; }
+}
+
+@media print {
+  header, aside, .noprint { display: none !important; }
+  body { background: white !important; }
+  main { padding: 0 !important; overflow: visible !important; }
+}

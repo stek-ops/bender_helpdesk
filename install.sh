@@ -23,8 +23,13 @@ PHP_VERSION="8.3"
 NODE_MAJOR="22"
 
 # ===== PROMPTS =====
-read -rp "Domain (e.g. example.com): " APP_DOMAIN
-[ -z "$APP_DOMAIN" ] && err "Domain is required"
+read -rp "Domain or IP (e.g. example.com or 192.168.1.10): " APP_DOMAIN
+if [ -z "$APP_DOMAIN" ]; then
+  APP_DOMAIN=$(curl -s ifconfig.me 2>/dev/null || hostname -I 2>/dev/null | awk '{print $1}' || echo "localhost")
+  warn "No domain entered — using IP: $APP_DOMAIN (SSL will be skipped)"
+fi
+read -rp "Enable SSL via Let's Encrypt? (y/N) [n]: " SSL_ENABLED
+SSL_ENABLED="${SSL_ENABLED:-n}"
 read -rp "App name [IT Helpdesk]: " APP_NAME
 APP_NAME="${APP_NAME:-IT Helpdesk}"
 read -rp "PostgreSQL database name [$DB_NAME]: " DB_NAME_IN
@@ -182,7 +187,7 @@ ok "Permissions set"
 info "Configuring Nginx..."
 sudo tee /etc/nginx/sites-available/helpdesk > /dev/null <<NGINX
 server {
-    server_name $APP_DOMAIN;
+    server_name $APP_DOMAIN _;
 
     root $INSTALL_DIR/backend/public;
 
@@ -215,12 +220,20 @@ sudo nginx -t && sudo systemctl reload nginx
 ok "Nginx configured (HTTP only)"
 
 # ===== SSL (Let's Encrypt) =====
-info "Installing Certbot for SSL..."
-sudo apt install -y certbot python3-certbot-nginx 2>/dev/null
-if sudo certbot --nginx -d "$APP_DOMAIN" --non-interactive --agree-tos --email "admin@$APP_DOMAIN" -m "admin@$APP_DOMAIN" 2>/dev/null; then
-  ok "SSL certificate obtained"
+if [ "$SSL_ENABLED" = "y" ] || [ "$SSL_ENABLED" = "Y" ]; then
+  if [[ "$APP_DOMAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    warn "Cannot issue SSL certificate for IP address — skipping SSL"
+  else
+    info "Installing Certbot for SSL..."
+    sudo apt install -y certbot python3-certbot-nginx 2>/dev/null
+    if sudo certbot --nginx -d "$APP_DOMAIN" --non-interactive --agree-tos --email "admin@$APP_DOMAIN" -m "admin@$APP_DOMAIN" 2>/dev/null; then
+      ok "SSL certificate obtained"
+    else
+      warn "SSL setup failed. Run manually: sudo certbot --nginx -d $APP_DOMAIN"
+    fi
+  fi
 else
-  warn "SSL setup skipped or failed. Run manually: sudo certbot --nginx -d $APP_DOMAIN"
+  warn "SSL skipped. Run manually later: sudo certbot --nginx -d $APP_DOMAIN"
 fi
 
 # ===== QUEUE WORKER (Supervisor) =====
@@ -244,11 +257,13 @@ sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl sta
 ok "Queue worker configured"
 
 # ===== SUMMARY =====
+PROTOCOL="http"
+if [ "$SSL_ENABLED" = "y" ] || [ "$SSL_ENABLED" = "Y" ]; then PROTOCOL="https"; fi
 echo ""
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}  INSTALLATION COMPLETE!${NC}"
 echo -e "${GREEN}========================================${NC}"
-echo -e "  Website:   ${CYAN}https://$APP_DOMAIN${NC}"
+echo -e "  Website:   ${CYAN}${PROTOCOL}://$APP_DOMAIN${NC}"
 echo -e "  Backend:   $INSTALL_DIR/backend"
 echo -e "  Frontend:  $INSTALL_DIR/frontend"
 echo -e "  Database:  $DB_NAME on PostgreSQL 16"

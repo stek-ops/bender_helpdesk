@@ -101,7 +101,7 @@ ok "Repository cloned"
 # ===== DATABASE =====
 info "Configuring PostgreSQL..."
 sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;" 2>/dev/null || warn "Database $DB_NAME already exists"
-sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD" <<< "$DB_PASS" 2>/dev/null || warn "User $DB_USER already exists"
+sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" 2>/dev/null || warn "User $DB_USER already exists"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" 2>/dev/null
 sudo -u postgres psql -c "GRANT ALL ON SCHEMA public TO $DB_USER;" 2>/dev/null
 sudo -u postgres psql -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;" 2>/dev/null

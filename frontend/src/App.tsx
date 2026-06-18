@@ -48,17 +48,6 @@ function App() {
         }).catch(() => {
           window.location.href = "/login"
         })
-      } else if (token) {
-        const user = {
-          id: Number(params.get("id")),
-          name: params.get("name") || "",
-          email: params.get("email") || "",
-          role: params.get("role") || "user",
-          token,
-        }
-        localStorage.setItem("user", JSON.stringify(user))
-        handleLogin(user)
-        window.location.href = "/"
       }
     }
   }, [])

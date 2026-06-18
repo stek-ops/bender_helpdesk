@@ -9,6 +9,7 @@ import Textarea from "../components/ui/Textarea"
 import { renderContent } from "../utils"
 import { uploadImage } from "../api/upload"
 import { ArrowLeft, Paperclip, User, Calendar, MessageSquare, Send, Clock, Flag, ArrowRight, Check, X, Play, Image, Printer, History, Star } from "lucide-react"
+import DOMPurify from "dompurify"
 import { useTranslation } from "../hooks/useTranslation"
 
 const statusColors: Record<string, string> = {
@@ -153,7 +154,7 @@ export default function TicketDetail({ user }: { user: { id: number; name: strin
         <div className="flex-1 min-w-0 space-y-5">
           <div className="bg-[var(--b24-card)] rounded-lg border border-[var(--b24-border)] shadow-sm">
             <div className="px-5 py-4">
-              <div className="text-sm text-[var(--b24-text-sidebar)] leading-relaxed" dangerouslySetInnerHTML={{ __html: renderContent(ticket.description) }} />
+              <div className="text-sm text-[var(--b24-text-sidebar)] leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderContent(ticket.description)) }} />
             </div>
 
             {ticket.files && ticket.files.length > 0 && (
@@ -195,7 +196,7 @@ export default function TicketDetail({ user }: { user: { id: number; name: strin
                           <span className="text-sm font-medium text-[var(--b24-text)]">{c.user?.name}</span>
                           <span className="text-xs text-[var(--b24-text-secondary)]">{new Date(c.created_at).toLocaleString("uk-UA")}</span>
                         </div>
-                        <div className="text-sm text-[var(--b24-text-sidebar)] leading-relaxed" dangerouslySetInnerHTML={{ __html: renderContent(c.content) }} />
+                        <div className="text-sm text-[var(--b24-text-sidebar)] leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderContent(c.content)) }} />
                       </div>
                     </div>
                   ))}

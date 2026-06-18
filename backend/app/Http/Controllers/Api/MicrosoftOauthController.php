@@ -27,9 +27,10 @@ class MicrosoftOauthController extends Controller
             'redirect_uri' => $redirectUri,
             'response_mode' => 'query',
             'scope' => 'openid email profile User.Read',
-            'state' => csrf_token(),
+            'state' => $state = \Illuminate\Support\Str::random(40),
         ]);
 
+        session(['oauth_state' => $state]);
         return redirect($url);
     }
 
@@ -39,6 +40,12 @@ class MicrosoftOauthController extends Controller
         if (!$code) {
             return redirect('/login?error=no_code');
         }
+
+        $savedState = session('oauth_state');
+        if (!$request->query('state') || !$savedState || !hash_equals($savedState, $request->query('state'))) {
+            return redirect('/login?error=invalid_state');
+        }
+        session()->forget('oauth_state');
 
         $tenantId = \App\Models\Setting::getValue('microsoft_tenant_id');
         $clientId = \App\Models\Setting::getValue('microsoft_client_id');
@@ -100,6 +107,10 @@ class MicrosoftOauthController extends Controller
             }
         } else {
             $user->update(['microsoft_token' => $accessToken]);
+        }
+
+        if (!$user->is_active) {
+            return redirect('/login?error=account_disabled');
         }
 
         $token = $user->createToken('microsoft-oauth')->plainTextToken;

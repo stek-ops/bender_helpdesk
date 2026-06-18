@@ -16,6 +16,10 @@ class RatingController extends Controller
             "comment" => "nullable|string|max:500",
         ]);
 
+        if ($ticket->user_id !== $request->user()->id) {
+            return response()->json(["message" => "Only the ticket author can rate."], 403);
+        }
+
         if ($ticket->status !== "closed") {
             return response()->json(["message" => "Only closed tickets can be rated."], 422);
         }

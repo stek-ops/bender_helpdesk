@@ -11,3 +11,5 @@ Thumbs.db
 /backend/bootstrap/cache/
 /frontend/dist/
 .env.bak
+*.py
+x.html

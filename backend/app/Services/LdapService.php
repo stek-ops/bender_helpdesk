@@ -43,6 +43,7 @@ class LdapService
 
             ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
+            @ldap_start_tls($conn);
 
             if ($cfg["username"]) {
                 if (!@ldap_bind($conn, $cfg["username"], $cfg["password"])) {
@@ -113,6 +114,7 @@ class LdapService
 
             ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
             ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
+            @ldap_start_tls($conn);
 
             $bindUser = $cfg["username"] ?: ($cfg["domain"] ? "test@" . $cfg["domain"] : "");
             $bindPass = $cfg["password"] ?: "";

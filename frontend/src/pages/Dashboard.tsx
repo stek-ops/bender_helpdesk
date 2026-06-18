@@ -125,7 +125,7 @@ export default function Dashboard({ user: _user }: DashboardProps) {
           ) : (
             <div className="space-y-2">
               {tickets.map((ticket: any) => (
-                <Link key={t.id} to={"/tickets/" + t.id}
+                <Link key={ticket.id} to={"/tickets/" + ticket.id}
                   className="block px-4 py-3 border border-[var(--b24-border)] rounded-lg hover:border-[var(--b24-primary)]/30 hover:bg-[var(--b24-bg-light)] transition-colors">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3 min-w-0">

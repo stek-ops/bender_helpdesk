@@ -27,8 +27,11 @@ class KbArticleController extends Controller
         return response()->json($q->latest()->paginate(20));
     }
 
-    public function show(KbArticle $kbArticle)
+    public function show(Request $request, KbArticle $kbArticle)
     {
+        if (!$kbArticle->is_published && $request->user()->role !== 'admin') {
+            abort(404);
+        }
         $kbArticle->load("user");
         return response()->json($kbArticle);
     }

@@ -115,6 +115,7 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
+        $this->authorize('view', $ticket);
         $ticket->load(['category.group', 'user', 'executor', 'coExecutor', 'observer', 'reviewer', 'comments.user', 'files', 'logs.user', 'rating']);
         return response()->json($ticket);
     }
@@ -193,6 +194,9 @@ class TicketController extends Controller
 
     public function assign(Request $request, Ticket $ticket)
     {
+        if (!in_array($request->user()->role, ['admin', 'executor'])) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
         $validated = $request->validate(["executor_id" => "required|exists:users,id"]);
         $ticket->executor_id = $validated["executor_id"];
         $ticket->assigned_by = $request->user()->id;

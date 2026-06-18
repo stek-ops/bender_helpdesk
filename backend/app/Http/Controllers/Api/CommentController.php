@@ -27,8 +27,11 @@ class CommentController extends Controller
         }
         return response()->json($comment, 201);
     }
-    public function destroy(Ticket $ticket, Comment $comment)
+    public function destroy(Request $request, Ticket $ticket, Comment $comment)
     {
+        if ($request->user()->id !== $comment->user_id && $request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
         $comment->delete();
         return response()->json(null, 204);
     }

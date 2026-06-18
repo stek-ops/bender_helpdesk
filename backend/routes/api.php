@@ -9,12 +9,12 @@ use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\SettingsController;
 
-Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::get('/auth/oauth/callback', [AuthController::class, 'oauthCallback']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload', [App\Http\Controllers\Api\UploadController::class, 'store']);
-    Route::post('/ai/ask', [App\Http\Controllers\Api\AiController::class, 'ask']);
+    Route::post('/ai/ask', [App\Http\Controllers\Api\AiController::class, 'ask'])->middleware('throttle:10,1');
     Route::get('/notifications/unread', [App\Http\Controllers\Api\NotificationController::class, 'unread']);
     Route::post('/notifications/{id}/read', [App\Http\Controllers\Api\NotificationController::class, 'markRead']);
     Route::post('/notifications/read-all', [App\Http\Controllers\Api\NotificationController::class, 'markAllRead']);

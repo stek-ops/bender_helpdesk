@@ -1,9 +1,12 @@
 import { uploadImage } from "./api/upload"
 
+import DOMPurify from "dompurify"
+
 export function renderContent(text: string): string {
-  return text
+  const html = text
     .replace(/\!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="max-w-full rounded-lg border border-[#E6E9EC] my-2" />')
     .replace(/\n/g, "<br />")
+  return DOMPurify.sanitize(html)
 }
 
 export async function handleImagePaste(

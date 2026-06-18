@@ -22,6 +22,7 @@ class Ticket extends Model
     public function assigner() { return $this->belongsTo(User::class, 'assigned_by'); }
     public function comments() { return $this->hasMany(Comment::class); }
     public function files(): HasMany { return $this->hasMany(TicketFile::class); }
+    public function logs() { return $this->hasMany(TicketLog::class); }
     public function rating() { return $this->hasOne(Rating::class); }
 
     public function coExecutor()

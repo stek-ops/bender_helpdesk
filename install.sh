@@ -101,7 +101,7 @@ ok "Repository cloned"
 # ===== DATABASE =====
 info "Configuring PostgreSQL..."
 sudo -u postgres psql -c "CREATE DATABASE $DB_NAME;" 2>/dev/null || warn "Database $DB_NAME already exists"
-sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" 2>/dev/null || warn "User $DB_USER already exists"
+sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD" <<< "$DB_PASS" 2>/dev/null || warn "User $DB_USER already exists"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" 2>/dev/null
 sudo -u postgres psql -c "GRANT ALL ON SCHEMA public TO $DB_USER;" 2>/dev/null
 sudo -u postgres psql -d "$DB_NAME" -c "GRANT ALL ON SCHEMA public TO $DB_USER;" 2>/dev/null
@@ -170,11 +170,8 @@ ok "Migrations done"
 
 # ===== DEFAULT ADMIN =====
 info "Creating admin user..."
-HASHED=$(php -r "echo password_hash('$ADMIN_PASS', PASSWORD_BCRYPT);")
-sudo -u postgres psql -d "$DB_NAME" -c "INSERT INTO users (name, email, password, role, is_active, created_at, updated_at) VALUES ('Admin', '$ADMIN_EMAIL', '$HASHED', 'admin', true, NOW(), NOW()) ON CONFLICT (email) DO UPDATE SET password='$HASHED', role='admin';" 2>/dev/null || {
-  cd "$INSTALL_DIR/backend"
-  php artisan tinker --execute="\\App\\Models\\User::create(['name' => 'Admin', 'email' => '$ADMIN_EMAIL', 'password' => bcrypt('$ADMIN_PASS'), 'role' => 'admin', 'is_active' => true]);" 2>/dev/null || true
-}
+cd "$INSTALL_DIR/backend"
+php artisan tinker --execute="\\App\\Models\\User::create(['name' => 'Admin', 'email' => '$ADMIN_EMAIL', 'password' => bcrypt('$ADMIN_PASS'), 'role' => 'admin', 'is_active' => true]);" 2>/dev/null || true
 ok "Admin user created: $ADMIN_EMAIL"
 
 # ===== STORAGE LINK =====
@@ -207,7 +204,14 @@ sudo tee /etc/nginx/sites-available/helpdesk > /dev/null <<NGINX
 server {
     server_name $APP_DOMAIN _;
 
+    server_tokens off;
+
     root $INSTALL_DIR/backend/public;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location /api/ {
         try_files \$uri \$uri/ /index.php?\$query_string;

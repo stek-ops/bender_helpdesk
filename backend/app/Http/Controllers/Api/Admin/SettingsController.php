@@ -49,7 +49,7 @@ class SettingsController extends Controller
             "base_dn" => Setting::getValue("ldap_base_dn", ""),
             "domain" => Setting::getValue("ldap_domain", ""),
             "username" => Setting::getValue("ldap_username", ""),
-            "password" => Setting::getValue("ldap_password", ""),
+            "password" => "",
             "auto_create" => Setting::getValue("ldap_auto_create", "true") === "true",
             "default_role" => Setting::getValue("ldap_default_role", "user"),
         ]);
@@ -154,6 +154,14 @@ class SettingsController extends Controller
 
         $envFile = base_path(".env");
         $env = file_get_contents($envFile);
+
+        $data["host"] = str_replace(["\r", "\n"], "", $data["host"] ?? "");
+        $data["username"] = str_replace(["\r", "\n"], "", $data["username"] ?? "");
+        $data["from_name"] = str_replace(["\r", "\n"], "", $data["from_name"] ?? "");
+        $data["from_address"] = str_replace(["\r", "\n"], "", $data["from_address"] ?? "");
+        if (!empty($data["password"])) {
+            $data["password"] = str_replace(["\r", "\n"], "", $data["password"]);
+        }
 
         $replacements = [
             "MAIL_MAILER" => $data["mailer"] ?? "smtp",

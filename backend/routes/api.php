@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\SettingsController;
 
-Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login');
 Route::get('/auth/oauth/callback', [AuthController::class, 'oauthCallback']);
 
 Route::middleware('auth:sanctum')->group(function () {

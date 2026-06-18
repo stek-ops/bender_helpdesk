@@ -81,7 +81,7 @@ if ! command -v composer &>/dev/null; then
   php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
   ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
   [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ] && err "Composer installer corrupted"
-  php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+  sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
   rm composer-setup.php
 fi
 ok "Composer $(composer -V 2>&1 | awk '{print $3}')"

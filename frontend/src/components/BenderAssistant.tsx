@@ -131,7 +131,7 @@ export default function BenderAssistant() {
           {/* Header */}
           <div className="bg-[var(--b24-header)] px-4 py-3 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-[#B8860B]">
-              <img src="https://static.wikia.nocookie.net/anime-characters-fight/images/6/6a/%D0%91%D0%B5%D0%BD%D0%B4%D0%B5%D1%80_4.png/revision/latest/scale-to-width-down/700?cb=20220603140448&path-prefix=ru" alt="Bender" className="w-full h-full object-cover" />
+              <img src="/bender.png" alt="Bender" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
               <div className="text-[var(--b24-text-inverse)] text-sm font-semibold">{t("bender_title")}</div>
@@ -164,7 +164,7 @@ export default function BenderAssistant() {
               <div key={i} className={`flex ${m.isUser ? "justify-end" : "justify-start"}`}>
                 {!m.isUser && (
                   <div className="w-7 h-7 rounded-full overflow-hidden mr-2 mt-0.5 shrink-0 border border-[#B8860B]">
-                    <img src="https://static.wikia.nocookie.net/anime-characters-fight/images/6/6a/%D0%91%D0%B5%D0%BD%D0%B4%D0%B5%D1%80_4.png/revision/latest/scale-to-width-down/700?cb=20220603140448&path-prefix=ru" alt="Bender" className="w-full h-full object-cover" />
+                    <img src="/bender.png" alt="Bender" className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
@@ -179,7 +179,7 @@ export default function BenderAssistant() {
             {loading && (
               <div className="flex justify-start">
                 <div className="w-7 h-7 rounded-full overflow-hidden mr-2 mt-0.5 shrink-0 border border-[#B8860B]">
-                  <img src="https://static.wikia.nocookie.net/anime-characters-fight/images/6/6a/%D0%91%D0%B5%D0%BD%D0%B4%D0%B5%D1%80_4.png/revision/latest/scale-to-width-down/700?cb=20220603140448&path-prefix=ru" alt="Bender" className="w-full h-full object-cover" />
+                  <img src="/bender.png" alt="Bender" className="w-full h-full object-cover" />
                 </div>
                 <div className="bg-[var(--b24-content)] text-[var(--b24-text)] rounded-2xl rounded-bl-md px-4 py-2.5 text-sm">
                   <span className="inline-flex gap-1">
@@ -217,7 +217,7 @@ export default function BenderAssistant() {
         title={t("bender_floating_title")}
       >
         {open ? <X className="w-6 h-6 text-[#D4A017] mx-auto mt-4" /> : (
-          <img src="https://static.wikia.nocookie.net/anime-characters-fight/images/6/6a/%D0%91%D0%B5%D0%BD%D0%B4%D0%B5%D1%80_4.png/revision/latest/scale-to-width-down/700?cb=20220603140448&path-prefix=ru" alt="Bender" className="w-full h-full object-cover" />
+          <img src="/bender.png" alt="Bender" className="w-full h-full object-cover" />
         )}
       </button>
     </div>

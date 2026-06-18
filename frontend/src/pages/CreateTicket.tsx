@@ -196,7 +196,7 @@ export default function CreateTicket() {
 
       <div className="bg-gradient-to-r from-[var(--b24-primary)]/10 to-[var(--b24-info-bg)] border border-[var(--b24-primary)]/20 rounded-lg px-5 py-3 mb-5 flex items-center gap-3">
         <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-[#B8860B]">
-          <img src="https://static.wikia.nocookie.net/anime-characters-fight/images/6/6a/%D0%91%D0%B5%D0%BD%D0%B4%D0%B5%D1%80_4.png/revision/latest/scale-to-width-down/700?cb=20220603140448&path-prefix=ru" alt="Bender" className="w-full h-full object-cover" />
+          <img src="/bender.png" alt="Bender" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium text-[var(--b24-text)]">{t("ticket_ask_bot")}</p>

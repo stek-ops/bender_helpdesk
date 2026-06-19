@@ -57,22 +57,26 @@ info "Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
 info "Installing dependencies..."
-# Add PHP PPA for older Ubuntu versions
+# Detect PHP version — use system default if 8.3 not available
 if ! apt-cache show php$PHP_VERSION-fpm &>/dev/null 2>&1; then
-  sudo apt install -y software-properties-common
-  # Map unknown codenames to supported Ubuntu release for PPA
-  PHP_CODENAME=$(lsb_release -cs 2>/dev/null || echo "jammy")
-  case "$PHP_CODENAME" in
-    noble|jammy|focal|bookworm|bullseye) ;;
-    plucky|resolute) PHP_CODENAME="noble" ;;  # 25.04 / 26.04 → use 24.04 PHP
-    *) PHP_CODENAME="jammy" ;;  # fallback for other unknown
-  esac
-  # Use sury.org directly (works for all Ubuntu/Debian versions)
-  sudo rm -f /etc/apt/sources.list.d/ondrej-php*.list /etc/apt/sources.list.d/php.list 2>/dev/null || true
-  sudo mkdir -p /etc/apt/keyrings
-  curl -fsSL https://packages.sury.org/php/apt.gpg 2>/dev/null | sudo gpg --dearmor -o /etc/apt/keyrings/php.gpg 2>/dev/null || true
-  echo "deb [signed-by=/etc/apt/keyrings/php.gpg] https://packages.sury.org/php/ $PHP_CODENAME main" | sudo tee /etc/apt/sources.list.d/php.list > /dev/null
-  sudo apt update
+  # Check if system provides a different PHP version
+  SYS_PHP=$(apt-cache search php-fpm 2>/dev/null | grep -oP "php[0-9]+\.[0-9]+-fpm" | head -1 | grep -oP "[0-9]+\.[0-9]+")
+  if [ -n "$SYS_PHP" ]; then
+    PHP_VERSION="$SYS_PHP"
+    info "Using system PHP $PHP_VERSION"
+  else
+    sudo apt install -y software-properties-common
+    PHP_CODENAME=$(lsb_release -cs 2>/dev/null || echo "jammy")
+    case "$PHP_CODENAME" in
+      noble|jammy|focal|bookworm|bullseye) ;;
+      *) PHP_CODENAME="jammy" ;;
+    esac
+    sudo rm -f /etc/apt/sources.list.d/ondrej-php*.list /etc/apt/sources.list.d/php.list 2>/dev/null || true
+    sudo mkdir -p /etc/apt/keyrings
+    curl -fsSL https://packages.sury.org/php/apt.gpg 2>/dev/null | sudo gpg --dearmor -o /etc/apt/keyrings/php.gpg 2>/dev/null || true
+    echo "deb [signed-by=/etc/apt/keyrings/php.gpg] https://packages.sury.org/php/ $PHP_CODENAME main" | sudo tee /etc/apt/sources.list.d/php.list > /dev/null
+    sudo apt update
+  fi
 fi
 sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring \
   nginx postgresql postgresql-client \
@@ -80,8 +84,7 @@ sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring 
   php$PHP_VERSION-pgsql php$PHP_VERSION-mbstring php$PHP_VERSION-xml \
   php$PHP_VERSION-curl php$PHP_VERSION-zip php$PHP_VERSION-bcmath \
   php$PHP_VERSION-gd redis-server supervisor unzip git
-  sudo apt install -y php$PHP_VERSION-imagick 2>/dev/null || warn "php-imagick not available (optional)"
-
+sudo apt install -y php$PHP_VERSION-imagick 2>/dev/null || warn "php-imagick not available (optional)"
 ok "System packages installed"
 
 # ===== START POSTGRESQL =====

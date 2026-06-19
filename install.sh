@@ -57,6 +57,12 @@ info "Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
 info "Installing dependencies..."
+# Add PHP PPA for older Ubuntu versions
+if ! apt-cache show php$PHP_VERSION-fpm &>/dev/null 2>&1; then
+  sudo apt install -y software-properties-common
+  sudo add-apt-repository -y ppa:ondrej/php
+  sudo apt update
+fi
 sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring \
   nginx postgresql postgresql-client \
   php$PHP_VERSION-fpm php$PHP_VERSION-cli php$PHP_VERSION-common \

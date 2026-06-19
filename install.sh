@@ -79,7 +79,8 @@ sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring 
   php$PHP_VERSION-fpm php$PHP_VERSION-cli php$PHP_VERSION-common \
   php$PHP_VERSION-pgsql php$PHP_VERSION-mbstring php$PHP_VERSION-xml \
   php$PHP_VERSION-curl php$PHP_VERSION-zip php$PHP_VERSION-bcmath \
-  php$PHP_VERSION-gd php$PHP_VERSION-imagick redis-server supervisor unzip git
+  php$PHP_VERSION-gd redis-server supervisor unzip git
+  sudo apt install -y php$PHP_VERSION-imagick 2>/dev/null || warn "php-imagick not available (optional)"
 
 ok "System packages installed"
 

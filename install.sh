@@ -64,7 +64,8 @@ if ! apt-cache show php$PHP_VERSION-fpm &>/dev/null 2>&1; then
   PHP_CODENAME=$(lsb_release -cs 2>/dev/null || echo "jammy")
   case "$PHP_CODENAME" in
     noble|jammy|focal|bookworm|bullseye) ;;
-    *) PHP_CODENAME="jammy" ;;  # fallback for unknown/resolute/etc
+    plucky|resolute) PHP_CODENAME="noble" ;;  # 25.04 / 26.04 → use 24.04 PHP
+    *) PHP_CODENAME="jammy" ;;  # fallback for other unknown
   esac
   # Try standard PPA first, fallback to sury.org directly
   PHP_APT_SOURCE="/etc/apt/sources.list.d/ondrej-ubuntu-php-$PHP_CODENAME.sources"

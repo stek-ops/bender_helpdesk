@@ -67,17 +67,11 @@ if ! apt-cache show php$PHP_VERSION-fpm &>/dev/null 2>&1; then
     plucky|resolute) PHP_CODENAME="noble" ;;  # 25.04 / 26.04 → use 24.04 PHP
     *) PHP_CODENAME="jammy" ;;  # fallback for other unknown
   esac
-  # Try standard PPA first, fallback to sury.org directly
-  PHP_APT_SOURCE="/etc/apt/sources.list.d/ondrej-ubuntu-php-$PHP_CODENAME.sources"
-  if [ -f "$PHP_APT_SOURCE" ]; then
-    sudo rm -f "$PHP_APT_SOURCE" /etc/apt/sources.list.d/php.list 2>/dev/null || true
-  fi
-  if ! sudo add-apt-repository -y ppa:ondrej/php 2>/dev/null; then
-    sudo rm -f "$PHP_APT_SOURCE" /etc/apt/sources.list.d/ondrej-php*.list 2>/dev/null || true
-    sudo mkdir -p /etc/apt/keyrings
-    curl -fsSL https://packages.sury.org/php/apt.gpg 2>/dev/null | sudo gpg --dearmor -o /etc/apt/keyrings/php.gpg 2>/dev/null || true
-    echo "deb [signed-by=/etc/apt/keyrings/php.gpg] https://packages.sury.org/php/ $PHP_CODENAME main" | sudo tee /etc/apt/sources.list.d/php.list > /dev/null
-  fi
+  # Use sury.org directly (works for all Ubuntu/Debian versions)
+  sudo rm -f /etc/apt/sources.list.d/ondrej-php*.list /etc/apt/sources.list.d/php.list 2>/dev/null || true
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL https://packages.sury.org/php/apt.gpg 2>/dev/null | sudo gpg --dearmor -o /etc/apt/keyrings/php.gpg 2>/dev/null || true
+  echo "deb [signed-by=/etc/apt/keyrings/php.gpg] https://packages.sury.org/php/ $PHP_CODENAME main" | sudo tee /etc/apt/sources.list.d/php.list > /dev/null
   sudo apt update
 fi
 sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring \

@@ -60,7 +60,18 @@ info "Installing dependencies..."
 # Add PHP PPA for older Ubuntu versions
 if ! apt-cache show php$PHP_VERSION-fpm &>/dev/null 2>&1; then
   sudo apt install -y software-properties-common
-  sudo add-apt-repository -y ppa:ondrej/php
+  # Map unknown codenames to supported Ubuntu release for PPA
+  PHP_CODENAME=$(lsb_release -cs 2>/dev/null || echo "jammy")
+  case "$PHP_CODENAME" in
+    noble|jammy|focal|bookworm|bullseye) ;;
+    *) PHP_CODENAME="jammy" ;;  # fallback for unknown/resolute/etc
+  esac
+  # Try standard PPA first, fallback to sury.org directly
+  if ! sudo add-apt-repository -y ppa:ondrej/php 2>/dev/null; then
+    sudo mkdir -p /etc/apt/keyrings
+    curl -fsSL https://packages.sury.org/php/apt.gpg 2>/dev/null | sudo gpg --dearmor -o /etc/apt/keyrings/php.gpg 2>/dev/null || true
+    echo "deb [signed-by=/etc/apt/keyrings/php.gpg] https://packages.sury.org/php/ $PHP_CODENAME main" | sudo tee /etc/apt/sources.list.d/php.list > /dev/null
+  fi
   sudo apt update
 fi
 sudo apt install -y curl wget gnupg2 ca-certificates lsb-release ubuntu-keyring \
